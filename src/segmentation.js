@@ -1,15 +1,14 @@
 var ffmpeg = require('fluent-ffmpeg');
 var amqp = require('amqplib/callback_api');
 
-segmentation = async (channel, folder, audio) => {
-    var path = "/vagrant/SourceSeparation/Spleeter/Output/" + folder + "/";
+segmentation = async (channel, vID, audio) => {
+    var path = "/vagrant/SourceSeparation/Spleeter/Output/" + vID + "/";
     // file metadata
     ffmpeg.ffprobe(path + audio + '.wav', async function (err, metadata) {
         var inputSec = 0;
         var duration = metadata.format.duration;
         // Round a number upward to its nearest integer:
-        var nFiles = Math.ceil(duration / 15);
-        // console.log(nFiles)
+        var nFiles = Math.ceil(duration / 15); // overlap 15 seconds
         for (let i = 1; i <= nFiles; i++) {
             var command = ffmpeg(path + audio + '.wav')
                 .seekInput(inputSec)
@@ -26,7 +25,7 @@ segmentation = async (channel, folder, audio) => {
                         var q = 'management';
                         var toSend = {
                             Service: "Segmentation",
-                            Result: { "vID": folder }
+                            Result: { "vID": vID }
                         }
                         channel.sendToQueue(q, Buffer.from(JSON.stringify(toSend)));
                         console.log(" [x] Sent %s to %s", toSend, q);
@@ -55,11 +54,13 @@ amqp.connect('amqp://localhost', async function (error0, connection) {
 
         console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
         channel.consume(queue, function (msg) {
-            var folder = msg.content.toString()
-            console.log(" [x] Received %s", folder);
-            //using source separation with 2 stems (vocals and accompaniment) 
-            segmentation(channel, folder, 'accompaniment');
-            segmentation(channel, folder, 'vocals');
+            var vID = msg.content.toString()
+            console.log(" [x] Received %s", vID);
+            //using source separation with 2 stems (vocals and accompaniment)
+            let sourceType = ['accompaniment', 'original', 'vocals']
+            for (let index = 0; index < sourceType.length; index++) {
+                segmentation(channel, vID, sourceType[index]);
+            }
         }, {
             noAck: true
         });
