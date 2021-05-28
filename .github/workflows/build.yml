@@ -36,6 +36,7 @@ jobs:
     - name: Container Image Scan
       uses: azure/container-scan@v0
       with:
+        severity-threshold: CRITICAL
         image-name: segmentation:local
 
     - name: Run Local Segmentation Docker Image
