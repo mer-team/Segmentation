@@ -1,0 +1,59 @@
+name: segmentation NodeJS CI/CD
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x]
+
+    env:
+      MQHOST: localhost
+      MQUSER: merUser
+      MQPASS: passwordMER
+      MQPORT: 5672
+      MNG_PORT: 15672
+
+    steps:
+    - name: Setup RabbitMQ Image
+      uses: mer-team/rabbitmq-mng-action@v1.2
+      with:
+        RABBITMQ_USER: $MQUSER
+        RABBITMQ_PASS: $MQPASS
+        RABBITMQ_PORT: $MQPORT
+        RABBITMQ_MNG_PORT: $MNG_PORT
+        RABBITMQ_TAG: '3-management-alpine'
+
+    - name: Checkout Segmentation Project
+      uses: actions/checkout@v2
+
+    - name: Build Local Segmentation Docker Image
+      run: docker build -t segmentation:local .
+
+    - name: Container Image Scan
+      uses: azure/container-scan@v0
+      with:
+        image-name: segmentation:local
+
+    - name: Run Local Segmentation Docker Image
+      run: docker run -d -e TIME=10 -e HOST=$MQHOST -e USER=$MQUSER -e PASS=$MQPASS -e MNG_PORT=$MNG_PORT --net=host -v "$GITHUB_WORKSPACE/src/test:/Audios" segmentation:local
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install dependencies
+      run: npm install --also=dev
+      working-directory: src
+
+    - name: Run Tests
+      run: npm test
+      working-directory: src
+
+    - name: Dump docker logs on failure
+      if: failure()
+      uses: jwalton/gh-docker-logs@v1
