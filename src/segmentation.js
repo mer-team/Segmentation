@@ -1,10 +1,15 @@
-var ffmpeg = require('fluent-ffmpeg');
-var amqp = require('amqplib/callback_api');
+var ffmpeg = require('fluent-ffmpeg'),
+    amqp = require('amqplib/callback_api');
+const user = process.env.USER || 'guest',
+      pass = process.env.PASS || 'guest',
+      host = process.env.HOST || 'localhost';
 
 segmentation = async (channel, vID, audio) => {
-    var path = "/vagrant/SourceSeparation/Spleeter/Output/" + vID + "/";
+    var path = "/Audios/" + vID + "/";
     // file metadata
     ffmpeg.ffprobe(path + audio + '.wav', async function (err, metadata) {
+        if (err)
+            console.log(err);
         var inputSec = 0;
         var duration = metadata.format.duration;
         // Round a number upward to its nearest integer:
@@ -38,7 +43,7 @@ segmentation = async (channel, vID, audio) => {
     });
 }
 
-amqp.connect('amqp://localhost', async function (error0, connection) {
+amqp.connect(`amqp://${user}:${pass}@${host}/`, async function (error0, connection) {
     if (error0) {
         throw error0;
     }
