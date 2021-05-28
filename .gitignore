@@ -278,7 +278,6 @@ dmypy.json
 *.box
 
 ### Ignore audio files ###
-*.wav
 *.mp3
 *.mp4
 
