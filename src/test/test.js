@@ -77,10 +77,9 @@ describe('Testing RabbitMQ', ()=>{
     });
   });
 
-  it('Should separate the music', function(done) {
+  it('Should split the music', function(done) {
     setTimeout(function(){
-      //fs.access(`${GITHUB_WORKSPACE}/test/JiF3pbvR5G0/${file}`, fs.F_OK, (err) => {
-        fs.access(`/Users/canoso/Desktop/Mestrado/Segmentation/src/test/JiF3pbvR5G0/${file}`, fs.F_OK, (err) => {
+      fs.access(`${GITHUB_WORKSPACE}/src/test/JiF3pbvR5G0/${file}`, fs.F_OK, (err) => {
         if (err) {
           console.error(err)
           console.log("File not found!");
