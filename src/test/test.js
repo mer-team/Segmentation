@@ -87,31 +87,31 @@ describe('Testing RabbitMQ', ()=>{
         }
         console.log("File found!");
         done();
-      })}, 15000);
+      })}, 10000);
   });
 
-  it("Should receive a message from the RabbitMQ", (done)=>{
-    amqp.connect(config, (err, conn)=>{
-      if(err){
-        console.log("Connection Error");
-        return;
-      }
-      conn.createChannel( (err, ch)=>{
-        if(err){
-          console.log("Error Creating Channel");
-          return;
-        }
-        ch.assertQueue(qRec, { durable: false });
-        ch.consume(qRec, function (msg) {
-          if (msg){
-            done();
-            setTimeout(function() { conn.close();}, 500);
-          } else {
-            console.log("Unexpected message");
-            return;
-          }
-        }, { noAck: true });
-      });
-    });
-  });
+  // it("Should receive a message from the RabbitMQ", (done)=>{
+  //   amqp.connect(config, (err, conn)=>{
+  //     if(err){
+  //       console.log("Connection Error");
+  //       return;
+  //     }
+  //     conn.createChannel( (err, ch)=>{
+  //       if(err){
+  //         console.log("Error Creating Channel");
+  //         return;
+  //       }
+  //       ch.assertQueue(qRec, { durable: false });
+  //       ch.consume(qRec, function (msg) {
+  //         if (msg){
+  //           done();
+  //           setTimeout(function() { conn.close();}, 500);
+  //         } else {
+  //           console.log("Unexpected message");
+  //           return;
+  //         }
+  //       }, { noAck: true });
+  //     });
+  //   });
+  // });
 });
