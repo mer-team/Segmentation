@@ -17,3 +17,39 @@ Through RabbitMQ:
 ```javascript
 { Service: 'Segmentation', Result: { vID: 'vID' } }
 ```
+
+### Docker Params
+| Arg | Default | Description |
+| --- | --- | --- |
+| HOST | localhost | RabbitMQ host |
+| USER | guest | HTTP basic auth username  |
+| PASS | guest | HTTP basic auth password |
+| PORT | 5672 | RabbitMQ Port |
+| MNG_PORT | 15672 | RabbitMQ Management Port |
+| TIME | 10 | Timeout to check if the service is up |
+
+### Volumes
+| Container Path | Description |
+| --- | --- |
+| `/Audios` | Folder where the downloaded audio files are accessed and the segmented files are saved |
+
+### Run Local Microservice
+Run Rabbit
+```
+docker run -d -e RABBITMQ_DEFAULT_USER=merUser -e RABBITMQ_DEFAULT_PASS=passwordMER -p 15672:15672 -p 5672:5672 rabbitmq:3-management-alpine
+```
+
+Build local `segmentation` from source
+```
+docker build -t segmentation:local .
+```
+
+Run local `segmentation`
+```
+docker run -e TIME=10 -e USER=merUser -e PASS=passwordMER -e HOST=localhost -e PORT=5672 -e MNG_PORT=15672 --net=host -v "<Local DIR>:/Audios" segmentation:local
+```
+
+Run official `segmentation` image locally
+```
+docker run -e TIME=10 -e USER=merUser -e PASS=passwordMER -e HOST=localhost -e PORT=5672 -e MNG_PORT=15672 --net=host -v "<Local DIR>:/Audios" merteam/segmentation:latest
+```

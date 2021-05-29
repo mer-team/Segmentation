@@ -4,7 +4,7 @@
   "description": "Segments an audio file into smaller files with 30 seconds length and 15 seconds of overlapping. This files are saved with one audio channel only and 22500 Hz of frequency.",
   "main": "segmentation.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test --timeout 15000"
   },
   "repository": {
     "type": "git",
@@ -19,5 +19,8 @@
   "dependencies": {
     "amqplib": "^0.6.0",
     "fluent-ffmpeg": "^2.1.2"
+  },
+  "devDependencies": {
+    "mocha": "^8.4.0"
   }
 }
