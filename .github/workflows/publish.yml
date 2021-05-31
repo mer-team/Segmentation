@@ -32,6 +32,6 @@ jobs:
           user: ${{ secrets.DOCKER_USERNAME }}
           pass: ${{ secrets.DOCKER_PASSWORD }}
           slug: merteam/segmentation
-          description: Segment and downsampling of audio files into smaller files with 30 seconds length and 15 seconds of overlapping
+          description: Segment and downsampling of audio files into smaller ones with 30s length and 15s of overlapping
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
