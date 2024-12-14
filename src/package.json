@@ -17,10 +17,10 @@
   },
   "homepage": "https://github.com/mer-team/Segmentation#readme",
   "dependencies": {
-    "amqplib": "^0.6.0",
+    "amqplib": "^0.10.3",
     "fluent-ffmpeg": "^2.1.2"
   },
   "devDependencies": {
-    "mocha": "^8.4.0"
+    "mocha": "^10.2.0"
   }
 }
